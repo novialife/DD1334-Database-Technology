@@ -1,0 +1,3 @@
+SELECT Name, Population, Elevation
+FROM City
+WHERE Elevation < 0;

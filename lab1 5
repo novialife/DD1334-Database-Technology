@@ -1,0 +1,3 @@
+SELECT Country, Name, Population
+FROM City
+WHERE Country = "S" and Population > 500000;

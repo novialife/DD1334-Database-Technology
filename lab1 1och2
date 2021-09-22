@@ -1,0 +1,6 @@
+ALTER TABLE Country
+RENAME COLUMN Name to CountryName;
+
+SELECT CountryName, Area, Population
+FROM Country
+WHERE Population < 1000;

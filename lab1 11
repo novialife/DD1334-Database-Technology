@@ -1,0 +1,7 @@
+SELECT Name
+FROM City
+WHERE Name LIKE '%x'
+UNION ALL
+SELECT CountryName as Name
+FROM Country
+WHERE Name LIKE 'Y%'

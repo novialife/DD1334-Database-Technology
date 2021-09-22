@@ -1,0 +1,7 @@
+SELECT  Country.CountryName, City.Name, City.Elevation
+FROM City
+INNER JOIN Country
+ON City.Country = Country.Code
+WHERE Elevation IS NOT NULL
+ORDER BY Elevation ASC
+LIMIT 5;

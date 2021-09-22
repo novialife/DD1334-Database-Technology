@@ -1,0 +1,3 @@
+SELECT CountryName, Population, Area
+FROM Country
+WHERE Population > 1000 AND Population < 2000 AND Area >= 1.0;

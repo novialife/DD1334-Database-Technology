@@ -1,9 +1,10 @@
+import math
 import sqlite3
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 import warnings
-from time import sleep
+
 warnings.filterwarnings('ignore')
 
 try:
@@ -19,10 +20,12 @@ class Program:
         self.cur = self.conn.cursor()  # create a database query cursor
 
         # specify the command line menu here
-        self.actions = [self.create_PopData, self.answer_a, self.answer_b, self.answer_c, self.answer_d, self.answer_e_f, self.answer_g,
+        self.actions = [self.create_PopData, self.answer_a, self.answer_b, self.answer_c, self.answer_d,
+                        self.answer_e_f, self.answer_g,
                         self.exit]
         # menu text for each of the actions above
-        self.menu = ["Create PopData","Answer A", "Answer B", "Answer C", "Answer D", "Answer E and F", "Answer G", "Exit"]
+        self.menu = ["Create PopData", "Answer A", "Answer B", "Answer C", "Answer D", "Answer E and F", "Answer G",
+                     "Exit"]
         self.cur = self.conn.cursor()
 
     def print_menu(self):
@@ -68,7 +71,7 @@ class Program:
     # Question A:################################################################################################################################
 
     def create_PopData(self):
-        drop_table_query = "Drop VIEW if EXISTS  PopData;"
+        drop_table_query = "DROP VIEW if EXISTS  PopData;"
         try:
             self.cur.execute(drop_table_query)
             self.conn.commit()
@@ -87,7 +90,7 @@ class Program:
             self.conn.rollback()
             exit()
 
-        drop_table_query = "Drop table if EXISTS  PopData2;"
+        drop_table_query = "DROP VIEW if EXISTS  PopData2;"
         try:
             self.cur.execute(drop_table_query)
             self.conn.commit()
@@ -110,7 +113,6 @@ class Program:
 
     def query_a(self):
         xy = "select year,  population From Popdata2";
-        print("U1: (start) " + xy)
         try:
             self.cur.execute(xy)
             data = self.cur.fetchall()
@@ -128,8 +130,7 @@ class Program:
                 ys.append(float(r[1]))
             else:
                 print("Dropped tuple ", r)
-        print("year:", xs)
-        print("population:", ys)
+
         return [xs, ys]
 
     def answer_a(self):
@@ -142,7 +143,6 @@ class Program:
     # Question B:################################################################################################################################
     def query_b(self):
         xy = "SELECT year, SUM(population) FROM PopData2 GROUP BY year";
-        print("U1: (start) " + xy)
         try:
             self.cur.execute(xy)
             data = self.cur.fetchall()
@@ -154,14 +154,12 @@ class Program:
         xs = []
         ys = []
         for r in data:
-            print("Considering tuple", r)
             if r[0] is not None and r[0] is not None:
                 xs.append(float(r[0]))
                 ys.append(float(r[1]))
             else:
                 print("Dropped tuple ", r)
-        print("year:", xs)
-        print("sum(population):", ys)
+
         return [xs, ys]
 
     def answer_b(self):
@@ -174,7 +172,6 @@ class Program:
     # Question C:################################################################################################################################
     def query_c(self):
         xy = "select year,  population From PopData2 where name ='New York'";
-        print("U1: (start) " + xy)
         try:
             self.cur.execute(xy)
             data = self.cur.fetchall()
@@ -192,9 +189,7 @@ class Program:
                 ys.append(float(r[1]))
             else:
                 print("Dropped tuple ", r)
-        print("New York City:")
-        print("year:", xs)
-        print("population:", ys)
+
         return [xs, ys]
 
     def answer_c(self):
@@ -203,14 +198,14 @@ class Program:
         score = regr.score(np.array(xs).reshape([-1, 1]), np.array(ys).reshape([-1, 1]))
         a = regr.coef_[0][0]
         b = regr.intercept_[0]
-        print("a:", a)
-        print("b:", b)
+        #print("a:", a)
+        #print("b:", b)
         xp = [1980, 1990, 2000, 2010, 2020, 2030]
         yp = []
         for cell in xp:
             yp.append((int(a) * cell + b))
 
-        print("predicted population:", yp)
+        #print("predicted population:", yp)
 
         plt.plot(xp, yp, color='red', linewidth=3)
         plt.scatter(xs, ys)
@@ -301,7 +296,6 @@ class Program:
                 xs.append(0)
                 ys.append(0)
 
-
         return [xs, ys]
 
     def answer_d(self):
@@ -323,7 +317,7 @@ class Program:
         self.query_create_table_linearprediction()
         self.query_insert_table_linearprediction(cities, countries, a_values, b_values, score_values)
         # close()
-        print("woopdityscoop")
+
     # Question E:################################################################################################################################
     def answer_e_f(self):
         """Prints a menu of all functions this program offers.  Returns the numerical correspondant of the choice made."""
@@ -404,12 +398,10 @@ class Program:
             self.conn.rollback()
             exit()
 
-
         for entry in data:
-            print(entry)
             query = 'INSERT INTO Prediction(name, country,population, year) VALUES ("' + str(
-                entry[0]) + '","' + str(entry[1]) + '",' + str(entry[2] * entry[4] + entry[3]) + ',' + str(entry[4]) + ')'
-            print(query)
+                entry[0]) + '","' + str(entry[1]) + '",' + str(entry[2] * entry[4] + entry[3]) + ',' + str(
+                entry[4]) + ')'
             try:
                 self.cur.execute(query)
                 self.conn.commit()
@@ -430,7 +422,7 @@ class Program:
             print("Error message:", e.args[0])
             self.conn.rollback()
             exit()
-        print(data)
+
         data2 = sorted(data, key=lambda x: x[0])
         zippeddata = zip(*data2)
         foo = list(zippeddata)
@@ -443,16 +435,13 @@ class Program:
             print("Empty table, populate it please!")
             return
 
-
         plt.scatter(xvals, yvals)
 
         xmax = xvals[int(np.argmax(yvals))]
         ymax = max(yvals)
         maxname = names[int(np.argmax(yvals))]
         xmin = xvals[int(np.argmin(yvals))]
-        print(min(xvals))
         ymin = min(yvals)
-        print(ymin)
         minname = names[int(np.argmin(yvals))]
 
         textmax = "Maximum Population, Year = {}, Population = {}, City = {}".format(int(xmax), int(ymax), maxname)
@@ -476,18 +465,17 @@ class Program:
     def main_menu_g(self, tries=0):
         if tries == 0:
             print()
-            ourhypothesis = "Insert Hypothesis here"
+            ourhypothesis = "that in general, big cities grow at higher rates than smaller ones"
             print("Hello! Our hypothesis is {}\n".format(ourhypothesis))
-            print("1. Analysis 1 \n"
-                  "2. Analysis 2\n"
-                  "3. Analysis 3\n"
-                  "4. Exit")
+            print("1. Growth Analysis \n"
+                  "2. Exit")
+
         try:
             choice = int(input())
             if choice < 1:
                 print("Too low!")
                 raise ValueError
-            elif choice > 4:
+            elif choice > 2:
                 print("Too High!")
                 raise ValueError
         except ValueError:
@@ -496,28 +484,147 @@ class Program:
             self.main_menu_g(1)
 
         if choice == 1:
-            print("Calls method 1")
-            self.method1()
+            print("Lets analyze the growth!")
+            self.Growth_Analysis()
+
         elif choice == 2:
-            print("Calls method 2")
-            self.method2()
-        elif choice == 3:
-            print("Calls method 3")
-            self.method3()
-        elif choice == 4:
             return
 
-    def method1(self):
+    def Growth_Analysis(self):
         while True:
             syntax_q = input("Do you want to see the syntax? y/n ")
             if syntax_q == "y":
                 self.syntax_printer()
 
-            data = self.data_grabber("year", "population", None, "Prediction")
-            sleep(5)
-            if data is not True:
+            big_city_size = input("How big do you consider a big city to be?")
+            small_city_size = input("How big do you consider a small city to be?")
+
+            bigx, bigy, smallx, smally = self.eval_city_growth(big_city_size, small_city_size)
+
+            ylower = min([min(bigy), min(smally)])
+            yupper = max([max(bigy), max(smally)])
+
+            fig, axs = plt.subplots(1, 2)
+            big_plot_label = "Growth Rate of cities where population > " + big_city_size
+            small_plot_label = "Growth Rate of cities where population < " + small_city_size
+            axs[0].plot(bigx, bigy, label=big_plot_label)
+            axs[1].plot(smallx, smally, label=small_plot_label)
+
+            axs[0].set_ylim(ylower, yupper)
+            axs[1].set_ylim(ylower, yupper)
+
+            fig.suptitle("Growth Rates of big and small cities")
+            axs[0].legend(loc=1, fontsize=6)
+            axs[1].legend(loc=2, fontsize=6)
+            plt.show()
+
+    def eval_city_growth(self, big_city_size, small_city_size):
+        years_big, pop_big = self.get_big_cities(big_city_size)
+        years_small, pop_small = self.get_small_cities(small_city_size)
+
+        first_year = max([min(years_big), min(years_small)])
+        last_year = min([max(years_big), max(years_small)])
+
+
+        prev_year = None
+        next_year = None
+        growth_list_big = []
+        while len(years_big) != 0:
+            i = 0
+            prev_year = next_year
+            while prev_year == next_year:
+                try:
+                    prev_year = years_big[i]
+                    next_year = years_big[i + 1]
+                    i += 1
+                except IndexError:
+                    i += 1
+                    break
+            try:
+                sliced = pop_big[:i]
+            except IndexError:
+                sliced = pop_big
+                growth_list_big.append([years_big[0], np.average(sliced)])
                 break
-        self.plotter(data, "scatter")
+
+            growth_list_big.append([years_big[0], np.average(sliced)])
+            pop_big = pop_big[i + 1:]
+            years_big = years_big[i + 1:]
+
+        prev_year = None
+        next_year = None
+        growth_list_small = []
+        while len(years_small) != 0:
+            i = 0
+            prev_year = next_year
+            while prev_year == next_year:
+                try:
+                    prev_year = years_small[i]
+                    next_year = years_small[i + 1]
+                    i += 1
+                except IndexError:
+                    i += 1
+                    break
+            try:
+                sliced = pop_small[:i]
+            except IndexError:
+                sliced = pop_small
+                growth_list_small.append([years_small[0], np.average(sliced)])
+                break
+
+            growth_list_small.append([years_small[0], np.average(sliced)])
+            pop_small = pop_small[i + 1:]
+            years_small = years_small[i + 1:]
+
+        pop_big = list(zip(*growth_list_big))[1]
+        year_big = list(zip(*growth_list_big))[0]
+        pop_small = list(zip(*growth_list_small))[1]
+        year_small = list(zip(*growth_list_small))[0]
+
+        growth_big = []
+        growth_small = []
+
+        for i in range(len(pop_big)):
+            try:
+                if math.isinf(pop_big[i + 1] / pop_big[i]) is True or pop_big[i + 1] / pop_big[i] > 5:
+                    pass
+                else:
+                    growth_big.append([year_big[i + 1], ((pop_big[i + 1] / pop_big[i]) - 1)])
+            except IndexError:
+                pass
+
+        for i in range(len(pop_small)):
+            try:
+                if math.isinf(pop_small[i + 1] / pop_small[i]) is True or (
+                        (pop_small[i + 1] / pop_small[i]) - 1) < -0.9 or ((pop_small[i + 1] / pop_small[i]) - 1) > 5:
+                    pass
+                else:
+                    growth_small.append([year_small[i + 1], ((pop_small[i + 1] / pop_small[i]) - 1)])
+            except IndexError:
+                pass
+
+        big_years = []
+        small_years = []
+        growth_big_final = []
+        growth_small_final = []
+
+        for elem in growth_big:
+            big_years.append(elem[0])
+            growth_big_final.append(elem[1])
+
+        for elem in growth_small:
+            small_years.append(elem[0])
+            growth_small_final.append(elem[1])
+
+        return big_years, growth_big_final, small_years, growth_small_final
+
+    def get_big_cities(self, big_city_size):
+        data = self.data_grabber("year", "population", None, "PopData", "population > " + big_city_size, None)
+        return data
+
+    def get_small_cities(self, small_city_size):
+        data = self.data_grabber("year", "population", None, "PopData", "population < " + small_city_size, None)
+        return data
 
     def method2(self):
         self.syntax_printer()
@@ -558,37 +665,12 @@ class Program:
             print()
             return True
 
-        return data
-
-    def plotter(self, data, plot_type, extras=None, labels=None):
-
-        print("Plotting!")
         data2 = sorted(data, key=lambda x: x[0])
         zippeddata = zip(*data2)
         z = list(zippeddata)
-        try:
-            x = list(map(float, z[0]))
-            y = list(map(float, z[1]))
-        except:
-            print("Empty table, populate it please!")
-            return
-
-        fig, ax = plt.subplots()
-        func = getattr(ax, plot_type)
-        if labels is not None:
-            func(x, y, label=labels[0])
-        else:
-            func(x,y)
-
-        i = 1
-        if extras is not None:
-            for extra in z[2:]:
-                extra = list(map(float, extra))
-                func(x, extra, labels[i])
-                i += 1
-
-        plt.show()
-
+        x = list(map(float, z[0]))
+        y = list(map(float, z[1]))
+        return x, y
 
     def syntax_printer(self):
         print("SYNTAX FOR FUNCTIONS IS:")
@@ -602,7 +684,6 @@ class Program:
         print("data: data, str: matplotlib plot type, YES/NO: extras, list: ['label1','label2','label3',....]")
         print("DONT GET IT WRONG, THERE IS ALMOST NO ERROR HANDLING FOR INPUT PARAMETERS...... ;(")
         print()
-
 
     ##Our code end here
     def print_answer(self, result):
